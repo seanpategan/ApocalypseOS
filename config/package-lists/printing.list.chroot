@@ -1,0 +1,7 @@
+cups
+cups-pdf
+cups-bsd
+printer-driver-all
+printer-driver-cups-pdf
+system-config-printer
+avahi-daemon

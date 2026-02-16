@@ -1,0 +1,49 @@
+#!/bin/bash
+# ApocalypseOS — Re-lock all wireless interfaces
+# Use this if wireless was temporarily enabled for any reason
+set -e
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+if [ "$(id -u)" -ne 0 ]; then
+    echo -e "${RED}Error: Must run as root (sudo apos-lockdown)${NC}"
+    exit 1
+fi
+
+echo "=== ApocalypseOS Wireless Lockdown ==="
+echo ""
+
+# Kill wireless connections
+nmcli radio wifi off 2>/dev/null || true
+nmcli radio wwan off 2>/dev/null || true
+
+# Block via rfkill
+rfkill block all
+
+# Bring down wireless interfaces
+for iface in /sys/class/net/wl*; do
+    if [ -e "$iface" ]; then
+        IFNAME=$(basename "$iface")
+        ip link set "$IFNAME" down 2>/dev/null || true
+        echo "  Disabled interface: $IFNAME"
+    fi
+done
+
+# Disable services
+systemctl stop wpa_supplicant 2>/dev/null || true
+systemctl stop bluetooth 2>/dev/null || true
+
+# Re-enable lockdown service
+systemctl enable apocalypseos-lockdown.service 2>/dev/null || true
+
+# Ensure firewall is active
+ufw --force enable 2>/dev/null || true
+
+echo ""
+echo -e "${GREEN}Lockdown complete.${NC}"
+echo "  - All wireless interfaces: BLOCKED"
+echo "  - Bluetooth: STOPPED"
+echo "  - Firewall: ACTIVE"
+echo "  - Lockdown service: ENABLED (persists across reboots)"

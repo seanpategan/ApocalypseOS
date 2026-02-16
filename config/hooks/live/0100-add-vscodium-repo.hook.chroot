@@ -1,0 +1,17 @@
+#!/bin/bash
+# ApocalypseOS build hook — Install VSCodium from official repo
+set -e
+
+echo "=== Adding VSCodium repository ==="
+
+# Add GPG key
+wget -qO - https://gitlab.com/nicedoc/nicedoc.io/-/raw/master/docs/codium/gpg-key.pub | gpg --dearmor -o /usr/share/keyrings/vscodium-archive-keyring.gpg
+
+# Add repository
+echo "deb [signed-by=/usr/share/keyrings/vscodium-archive-keyring.gpg] https://download.vscodium.com/debs vscodium main" > /etc/apt/sources.list.d/vscodium.list
+
+# Install
+apt-get update
+apt-get install -y codium
+
+echo "=== VSCodium installed ==="

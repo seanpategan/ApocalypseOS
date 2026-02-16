@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=ApocalypseOS Guides
+Comment=Offline coding documentation and tutorials
+Exec=apos-guides
+Icon=accessories-text-editor
+Terminal=false
+Type=Application
+Categories=Documentation;Development;

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=ApocalypseOS Setup
+Comment=First-time setup wizard — hardware detection, AI models, and lockdown
+Exec=xfce4-terminal -e "sudo apocalypseos-setup"
+Icon=system-settings
+Terminal=false
+Type=Application
+Categories=System;Settings;

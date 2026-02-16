@@ -1,0 +1,65 @@
+#!/bin/bash
+# ApocalypseOS — Restore from encrypted BorgBackup
+set -e
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+if [ "$(id -u)" -ne 0 ]; then
+    echo -e "${RED}Error: Must run as root (sudo apos-restore /path/to/backup)${NC}"
+    exit 1
+fi
+
+REPO="${1:-/mnt/backup/apocalypseos}"
+KEY_FILE="/root/.config/apos-backup-key"
+RESTORE_TARGET="${2:-/mnt/restore}"
+
+if [ ! -f "$KEY_FILE" ]; then
+    echo -e "${RED}Error: Encryption key not found at $KEY_FILE${NC}"
+    echo "If restoring on a new system, copy your key file to $KEY_FILE first."
+    exit 1
+fi
+
+echo -e "${GREEN}=== ApocalypseOS Restore ===${NC}"
+echo "Repository: $REPO"
+echo ""
+
+# List available backups
+echo -e "${BLUE}Available backups:${NC}"
+BORG_PASSCOMMAND="cat $KEY_FILE" borg list "$REPO"
+echo ""
+
+read -p "Enter backup name to restore (e.g., backup-20260216-120000): " BACKUP_NAME
+
+if [ -z "$BACKUP_NAME" ]; then
+    echo -e "${RED}No backup selected. Aborting.${NC}"
+    exit 1
+fi
+
+echo ""
+echo -e "${YELLOW}Restore target: $RESTORE_TARGET${NC}"
+echo -e "${YELLOW}This will extract the backup contents to $RESTORE_TARGET${NC}"
+read -p "Continue? (y/N): " CONFIRM
+
+if [ "$CONFIRM" != "y" ] && [ "$CONFIRM" != "Y" ]; then
+    echo "Aborted."
+    exit 0
+fi
+
+mkdir -p "$RESTORE_TARGET"
+
+echo ""
+echo -e "${BLUE}Restoring $BACKUP_NAME...${NC}"
+
+cd "$RESTORE_TARGET"
+BORG_PASSCOMMAND="cat $KEY_FILE" borg extract --verbose "$REPO::$BACKUP_NAME"
+
+echo ""
+echo -e "${GREEN}=== Restore complete ===${NC}"
+echo "Files restored to: $RESTORE_TARGET"
+echo ""
+echo "To apply restored files to root filesystem:"
+echo "  sudo rsync -aAXv $RESTORE_TARGET/ / --exclude={'/dev/*','/proc/*','/sys/*','/tmp/*','/run/*','/mnt/*'}"

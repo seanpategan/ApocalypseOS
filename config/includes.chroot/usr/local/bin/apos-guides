@@ -1,0 +1,21 @@
+#!/bin/bash
+# ApocalypseOS — Open offline coding guides
+GUIDES_DIR="/usr/share/doc/apocalypseos/guides"
+
+if [ ! -d "$GUIDES_DIR" ]; then
+    echo "Error: Guides directory not found at $GUIDES_DIR"
+    exit 1
+fi
+
+# Try to open in VSCodium, fall back to terminal viewer
+if command -v codium &>/dev/null; then
+    codium "$GUIDES_DIR"
+elif command -v xdg-open &>/dev/null && [ -n "$DISPLAY" ]; then
+    xdg-open "$GUIDES_DIR/index.md"
+else
+    if command -v less &>/dev/null; then
+        less "$GUIDES_DIR/index.md"
+    else
+        cat "$GUIDES_DIR/index.md"
+    fi
+fi

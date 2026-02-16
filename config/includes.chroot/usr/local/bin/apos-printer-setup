@@ -1,0 +1,85 @@
+#!/bin/bash
+# ApocalypseOS — Printer setup helper
+set -e
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+if [ "$(id -u)" -ne 0 ]; then
+    echo -e "${RED}Error: Must run as root (sudo apos-printer-setup)${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}=== ApocalypseOS Printer Setup ===${NC}"
+echo ""
+
+# Ensure CUPS is running
+systemctl enable --now cups
+echo -e "${GREEN}CUPS print service is running.${NC}"
+echo ""
+
+# Detect printers
+echo -e "${BLUE}Detecting connected printers...${NC}"
+echo ""
+PRINTERS=$(lpinfo -v 2>/dev/null || true)
+
+if [ -z "$PRINTERS" ]; then
+    echo "  No printers detected."
+    echo ""
+    echo "  Make sure your printer is:"
+    echo "    - Connected via USB"
+    echo "    - Powered on"
+    echo ""
+    echo "  Then run this script again."
+else
+    echo "$PRINTERS"
+fi
+
+echo ""
+echo -e "${BLUE}=== Quick Setup Guide ===${NC}"
+echo ""
+echo "  Add a USB printer:"
+echo "    lpadmin -p myprinter -E -v usb://... -m everywhere"
+echo ""
+echo "  Set as default:"
+echo "    lpoptions -d myprinter"
+echo ""
+echo "  Print a file:"
+echo "    lp document.pdf"
+echo "    lp -d myprinter document.txt"
+echo ""
+echo "  Print from a pipe:"
+echo "    echo 'Hello World' | lp"
+echo "    cat report.txt | lp -d myprinter"
+echo ""
+echo "  List print jobs:"
+echo "    lpq"
+echo ""
+echo "  Cancel a print job:"
+echo "    cancel <job-id>"
+echo ""
+echo "  CUPS web interface (local access only):"
+echo "    Open a browser to http://localhost:631"
+echo ""
+
+# Interactive setup option
+read -p "Would you like to set up a detected printer now? (y/N): " SETUP
+
+if [ "$SETUP" = "y" ] || [ "$SETUP" = "Y" ]; then
+    echo ""
+    read -p "Enter printer URI (from list above, e.g., usb://...): " URI
+    read -p "Enter a name for this printer: " NAME
+
+    if [ -n "$URI" ] && [ -n "$NAME" ]; then
+        lpadmin -p "$NAME" -E -v "$URI" -m everywhere
+        lpoptions -d "$NAME"
+        echo ""
+        echo -e "${GREEN}Printer '$NAME' configured and set as default.${NC}"
+        echo "Test with: echo 'ApocalypseOS test page' | lp"
+    else
+        echo -e "${RED}Printer URI and name are required.${NC}"
+    fi
+fi

@@ -1,0 +1,14 @@
+[Unit]
+Description=ApocalypseOS Wireless Lockdown
+After=network-pre.target
+Before=network.target
+Wants=network-pre.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/rfkill block all
+ExecStart=/bin/sh -c 'for iface in /sys/class/net/wl*; do [ -e "$iface" ] && ip link set "$(basename "$iface")" down 2>/dev/null; done'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
