@@ -5,10 +5,22 @@ set -e
 echo "=== Adding VSCodium repository ==="
 
 # Add GPG key
-wget -qO - https://gitlab.com/nicedoc/nicedoc.io/-/raw/master/docs/codium/gpg-key.pub | gpg --dearmor -o /usr/share/keyrings/vscodium-archive-keyring.gpg
+wget -qO /tmp/vscodium-key.gpg https://gitlab.com/nicedoc/nicedoc.io/-/raw/master/docs/codium/gpg-key.pub 2>/dev/null || \
+wget -qO /tmp/vscodium-key.gpg https://raw.githubusercontent.com/nicedoc/nicedoc.io/master/docs/codium/gpg-key.pub 2>/dev/null || \
+wget -qO /tmp/vscodium-key.gpg https://paulcarroty.gitlab.io/vscodium-deb-rpm-repo/pub.gpg 2>/dev/null
+
+if [ -s /tmp/vscodium-key.gpg ]; then
+    gpg --batch --yes --dearmor -o /usr/share/keyrings/vscodium-archive-keyring.gpg /tmp/vscodium-key.gpg 2>/dev/null || \
+    cp /tmp/vscodium-key.gpg /usr/share/keyrings/vscodium-archive-keyring.gpg
+    rm -f /tmp/vscodium-key.gpg
+else
+    echo "WARNING: Could not download VSCodium GPG key. Skipping VSCodium install."
+    echo "You can install VSCodium manually later."
+    exit 0
+fi
 
 # Add repository
-echo "deb [signed-by=/usr/share/keyrings/vscodium-archive-keyring.gpg] https://download.vscodium.com/debs vscodium main" > /etc/apt/sources.list.d/vscodium.list
+echo "deb [signed-by=/usr/share/keyrings/vscodium-archive-keyring.gpg] https://paulcarroty.gitlab.io/vscodium-deb-rpm-repo/debs vscodium main" > /etc/apt/sources.list.d/vscodium.list
 
 # Install
 apt-get update
