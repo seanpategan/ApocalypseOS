@@ -1,0 +1,17 @@
+#!/bin/bash
+# ApocalypseOS build hook — Install fastfetch from GitHub releases
+set -e
+
+echo "=== Installing fastfetch ==="
+
+ARCH="amd64"
+FASTFETCH_URL=$(wget -qO- https://api.github.com/repos/fastfetch-cli/fastfetch/releases/latest | grep "browser_download_url.*linux-${ARCH}\.deb" | head -1 | cut -d'"' -f4)
+
+if [ -n "$FASTFETCH_URL" ]; then
+    wget -qO /tmp/fastfetch.deb "$FASTFETCH_URL"
+    dpkg -i /tmp/fastfetch.deb || apt-get install -f -y
+    rm -f /tmp/fastfetch.deb
+    echo "=== fastfetch installed ==="
+else
+    echo "WARNING: Could not find fastfetch release. Skipping."
+fi
