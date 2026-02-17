@@ -27,3 +27,16 @@ apt-get update
 apt-get install -y codium
 
 echo "=== VSCodium installed ==="
+
+# Install Continue extension for VSCodium (offline AI coding assistant)
+echo "=== Installing Continue extension for VSCodium ==="
+codium --install-extension Continue.continue 2>/dev/null || \
+    echo "WARNING: Could not install Continue extension. Install manually later."
+
+# Install aider (AI pair programming in the terminal)
+echo "=== Installing aider ==="
+pip3 install --break-system-packages aider-chat 2>/dev/null || \
+    pip3 install aider-chat 2>/dev/null || \
+    echo "WARNING: Could not install aider. Install manually later."
+
+echo "=== AI coding tools installed ==="

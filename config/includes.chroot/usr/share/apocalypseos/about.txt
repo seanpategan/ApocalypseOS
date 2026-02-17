@@ -25,6 +25,8 @@ COMMANDS
   ollama run <model>     Chat with a local AI model
   fastfetch              Display system information
   codium                 Launch VSCodium (code editor)
+  aider                  AI pair programmer in your terminal (uses Ollama)
+  Continue               AI coding assistant inside VSCodium (auto-configured)
 
 
 SECURITY FEATURES
@@ -58,12 +60,27 @@ OFFLINE AI
 DEVELOPMENT TOOLS
 -----------------
   Editor:     VSCodium (open-source VS Code) — launch with 'codium'
+  AI Coding:  aider (terminal) + Continue (VSCodium extension)
   Languages:  Python 3, GCC/G++ (C/C++), Node.js, Bash
   Tools:      Git, Make, CMake, GDB, Valgrind, ShellCheck
   Guides:     Run 'apos-guides' for offline tutorials on:
                 - Python, C, JavaScript
                 - Using Git offline
                 - Using local AI for coding
+
+
+AI CODING TOOLS
+---------------
+  aider — Terminal-based AI pair programmer (like Claude Code but offline)
+    cd my-project
+    aider                          Start aider in current directory
+    aider main.py utils.py         Work on specific files
+    aider --model ollama/llama3    Use a specific model
+
+  Continue — VSCodium extension for inline AI assistance
+    Pre-configured to use your local Ollama models.
+    Open VSCodium, press Ctrl+L to chat, or Ctrl+I for inline edits.
+    Tab autocomplete is enabled by default.
 
 
 PRINTING

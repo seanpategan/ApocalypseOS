@@ -1,0 +1,15 @@
+# ApocalypseOS — aider configuration for offline use with Ollama
+# aider will use your local Ollama models. No API keys needed.
+
+# Default model (change to whatever you installed via Ollama)
+# Run 'ollama list' to see available models
+model: ollama/codellama:7b
+
+# No analytics
+analytics: false
+
+# Dark theme
+dark-mode: true
+
+# Auto-commit changes
+auto-commits: true
