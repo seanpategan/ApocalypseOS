@@ -60,9 +60,13 @@ OFFLINE AI
 DEVELOPMENT TOOLS
 -----------------
   Editor:     VSCodium (open-source VS Code) — launch with 'codium'
+  Browser:    Firefox ESR — for testing localhost web apps
   AI Coding:  aider (terminal) + Continue (VSCodium extension)
-  Languages:  Python 3, GCC/G++ (C/C++), Node.js, Bash
+  Languages:  Python 3, GCC/G++ (C/C++), Node.js, Rust, Lua, Perl, Bash
   Tools:      Git, Make, CMake, GDB, Valgrind, ShellCheck
+  Testing:    curl, httpie, jq, netcat, socat, strace
+  Media:      ffmpeg, ImageMagick, Pandoc
+  Databases:  SQLite + SQLite Browser, PostgreSQL client
   Guides:     Run 'apos-guides' for offline tutorials on:
                 - Python, C, JavaScript
                 - Using Git offline

@@ -12,3 +12,34 @@ sqlite3
 gdb
 valgrind
 shellcheck
+
+# Web browser (for testing localhost apps)
+firefox-esr
+
+# Testing and debugging tools
+curl
+httpie
+jq
+xmlstarlet
+strace
+ltrace
+netcat-openbsd
+socat
+iproute2
+
+# Database tools
+sqlitebrowser
+postgresql-client
+
+# File and text processing
+pandoc
+imagemagick
+ffmpeg
+bc
+csvtool
+
+# Additional languages/runtimes
+lua5.4
+perl
+rustc
+cargo
