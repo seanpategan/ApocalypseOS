@@ -1,0 +1,103 @@
+================================================================================
+                            ApocalypseOS
+              A security-hardened offline Linux distribution
+================================================================================
+
+ABOUT
+-----
+ApocalypseOS is a Debian-based Linux distribution designed to function fully
+offline. After installation, ALL network interfaces (Wi-Fi, Bluetooth, Ethernet)
+are permanently disabled. No data enters or leaves this machine.
+
+Built for those who prioritize security, privacy, and resilience.
+
+
+COMMANDS
+--------
+  apocalypseos-setup     First-time setup wizard (hardware detection, AI models)
+  apos-backup <path>     Encrypted backup to external drive using BorgBackup
+  apos-restore <path>    Restore from an encrypted backup
+  apos-printer-setup     Set up and configure printers via CUPS
+  apos-lockdown          Re-lock all network interfaces (safety net)
+  apos-wipe-usb          Securely wipe a USB drive (3-pass, unrecoverable)
+  apos-guides            Open offline coding guides in VSCodium
+  ollama list            List installed AI models
+  ollama run <model>     Chat with a local AI model
+  fastfetch              Display system information
+  codium                 Launch VSCodium (code editor)
+
+
+SECURITY FEATURES
+-----------------
+  - ALL wireless disabled: Wi-Fi, Bluetooth, NFC, infrared modules blacklisted
+  - ALL networking disabled: NetworkManager disabled, firewall denies everything
+  - UFW firewall: default deny incoming AND outgoing
+  - AppArmor: mandatory access control enforced
+  - Full-disk encryption: supported via LUKS/cryptsetup
+  - Encrypted backups: BorgBackup with automatic key generation
+  - Secure USB wipe: 3-pass overwrite (random/zero/random) + partition destroy
+  - No telemetry: nothing phones home, ever
+
+
+OFFLINE AI
+----------
+  Ollama runs language models entirely on your hardware. No internet needed
+  after initial model download during setup.
+
+  Recommended models:
+    32GB+ RAM + GPU:  llama3:70b, codellama:34b
+    16GB RAM:         llama3:8b, codellama:7b, mistral:7b
+    8GB RAM:          phi3:mini, tinyllama
+    <8GB RAM:         tinyllama
+
+  Usage:
+    ollama run llama3 "Explain how to use pointers in C"
+    cat mycode.py | ollama run codellama "Review this code for bugs"
+
+
+DEVELOPMENT TOOLS
+-----------------
+  Editor:     VSCodium (open-source VS Code) — launch with 'codium'
+  Languages:  Python 3, GCC/G++ (C/C++), Node.js, Bash
+  Tools:      Git, Make, CMake, GDB, Valgrind, ShellCheck
+  Guides:     Run 'apos-guides' for offline tutorials on:
+                - Python, C, JavaScript
+                - Using Git offline
+                - Using local AI for coding
+
+
+PRINTING
+--------
+  CUPS is pre-installed. Run 'apos-printer-setup' to configure printers.
+
+  Quick commands:
+    lp document.pdf              Print a file
+    lp -d myprinter file.txt     Print to a specific printer
+    echo "text" | lp             Print from stdin
+    lpq                          Show print queue
+    cancel <job-id>              Cancel a print job
+
+
+BACKUP & RESTORE
+----------------
+  Backups are encrypted with BorgBackup using a randomly generated key.
+
+  sudo apos-backup /mnt/usb/backup      Create encrypted backup
+  sudo apos-restore /mnt/usb/backup     Restore from backup
+
+  IMPORTANT: Your encryption key is stored at /root/.config/apos-backup-key
+  Copy this key to a safe location. Without it, backups cannot be restored.
+
+
+FILE LOCATIONS
+--------------
+  /usr/share/doc/apocalypseos/guides/    Offline coding guides
+  /usr/share/apocalypseos/logo.png       ApocalypseOS logo
+  /usr/share/apocalypseos/about.txt      This file
+  /etc/modprobe.d/disable-wireless.conf  Wireless module blacklist
+  /etc/modprobe.d/disable-network.conf   Network module blacklist
+
+
+================================================================================
+              ApocalypseOS — Survive. Code. Endure.
+================================================================================

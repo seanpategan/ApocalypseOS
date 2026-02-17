@@ -1,0 +1,16 @@
+[Unit]
+Description=ApocalypseOS Full Network Lockdown
+After=network-pre.target
+Before=network.target
+Wants=network-pre.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'for iface in /sys/class/net/*; do name=$(basename "$iface"); [ "$name" != "lo" ] && ip link set "$name" down 2>/dev/null; done'
+ExecStart=/usr/sbin/rfkill block all
+ExecStart=/bin/systemctl stop NetworkManager 2>/dev/null || true
+ExecStart=/bin/systemctl disable NetworkManager 2>/dev/null || true
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

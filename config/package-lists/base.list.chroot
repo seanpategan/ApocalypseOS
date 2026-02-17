@@ -31,3 +31,6 @@ fdisk
 smartmontools
 usbutils
 pciutils
+fastfetch
+nwipe
+rfkill

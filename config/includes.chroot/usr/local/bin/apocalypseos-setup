@@ -129,26 +129,42 @@ if command -v ollama &>/dev/null; then
     fi
 fi
 
-# --- Phase 4: Disconnect and lock down wireless ---
+# --- Phase 4: Kill ALL networking ---
 echo ""
-echo -e "${BLUE}[4/5] Locking down wireless interfaces...${NC}"
+echo -e "${BLUE}[4/5] Disabling ALL network interfaces permanently...${NC}"
 
-# Disconnect Wi-Fi
+# Disconnect everything
 nmcli device disconnect wlan0 2>/dev/null || true
 nmcli radio wifi off 2>/dev/null || true
+nmcli networking off 2>/dev/null || true
 
 # Block all wireless via rfkill
 rfkill block all
 
-# Disable wireless services
+# Bring down every network interface except loopback
+for iface in /sys/class/net/*; do
+    IFNAME=$(basename "$iface")
+    if [ "$IFNAME" != "lo" ]; then
+        ip link set "$IFNAME" down 2>/dev/null || true
+        echo "  Disabled interface: $IFNAME"
+    fi
+done
+
+# Disable all network services
+systemctl disable --now NetworkManager 2>/dev/null || true
 systemctl disable --now wpa_supplicant 2>/dev/null || true
 systemctl disable --now bluetooth 2>/dev/null || true
+systemctl disable --now networking 2>/dev/null || true
+systemctl disable --now systemd-networkd 2>/dev/null || true
 
-# Enable the lockdown service for future boots
+# Enable lockdown services for future boots
 systemctl enable apocalypseos-lockdown.service 2>/dev/null || true
+systemctl enable apocalypseos-disable-network.service 2>/dev/null || true
 
-echo "  All wireless interfaces disabled."
-echo "  Wireless module blacklist active at /etc/modprobe.d/disable-wireless.conf"
+echo ""
+echo "  All network interfaces: DISABLED"
+echo "  Wireless module blacklist: /etc/modprobe.d/disable-wireless.conf"
+echo "  Network module blacklist: /etc/modprobe.d/disable-network.conf"
 
 # --- Phase 5: Firewall ---
 echo ""
@@ -167,12 +183,15 @@ echo -e "${GREEN}============================================${NC}"
 echo -e "${GREEN}     ApocalypseOS setup complete!           ${NC}"
 echo -e "${GREEN}============================================${NC}"
 echo ""
-echo "  - Wireless: DISABLED permanently"
+echo "  - ALL networking: DISABLED permanently"
 echo "  - Firewall: ACTIVE (deny all)"
 echo "  - Ollama:   $(command -v ollama &>/dev/null && echo 'INSTALLED' || echo 'NOT INSTALLED')"
 echo ""
-echo "  Type 'guides' to open offline coding documentation."
-echo "  Type 'ollama list' to see your installed models."
+echo "  This machine is now fully offline. No data in. No data out."
+echo ""
+echo "  Run 'cat /usr/share/apocalypseos/about.txt' for commands and features."
+echo "  Run 'apos-guides' for offline coding tutorials."
+echo "  Run 'ollama list' to see your installed AI models."
 echo ""
 
 # Mark setup as complete

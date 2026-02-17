@@ -1,6 +1,6 @@
 #!/bin/bash
-# ApocalypseOS — Re-lock all wireless interfaces
-# Use this if wireless was temporarily enabled for any reason
+# ApocalypseOS — Re-lock ALL network interfaces
+# Use this if networking was temporarily enabled for any reason
 set -e
 
 RED='\033[0;31m'
@@ -12,38 +12,47 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
-echo "=== ApocalypseOS Wireless Lockdown ==="
+echo "=== ApocalypseOS Full Network Lockdown ==="
 echo ""
 
-# Kill wireless connections
+# Kill all networking
+nmcli networking off 2>/dev/null || true
 nmcli radio wifi off 2>/dev/null || true
 nmcli radio wwan off 2>/dev/null || true
 
 # Block via rfkill
 rfkill block all
 
-# Bring down wireless interfaces
-for iface in /sys/class/net/wl*; do
-    if [ -e "$iface" ]; then
-        IFNAME=$(basename "$iface")
+# Bring down ALL interfaces except loopback
+for iface in /sys/class/net/*; do
+    IFNAME=$(basename "$iface")
+    if [ "$IFNAME" != "lo" ]; then
         ip link set "$IFNAME" down 2>/dev/null || true
         echo "  Disabled interface: $IFNAME"
     fi
 done
 
-# Disable services
+# Disable all network services
+systemctl stop NetworkManager 2>/dev/null || true
+systemctl disable NetworkManager 2>/dev/null || true
 systemctl stop wpa_supplicant 2>/dev/null || true
 systemctl stop bluetooth 2>/dev/null || true
+systemctl stop networking 2>/dev/null || true
+systemctl stop systemd-networkd 2>/dev/null || true
 
-# Re-enable lockdown service
+# Re-enable lockdown services
 systemctl enable apocalypseos-lockdown.service 2>/dev/null || true
+systemctl enable apocalypseos-disable-network.service 2>/dev/null || true
 
 # Ensure firewall is active
 ufw --force enable 2>/dev/null || true
 
 echo ""
-echo -e "${GREEN}Lockdown complete.${NC}"
-echo "  - All wireless interfaces: BLOCKED"
-echo "  - Bluetooth: STOPPED"
-echo "  - Firewall: ACTIVE"
-echo "  - Lockdown service: ENABLED (persists across reboots)"
+echo -e "${GREEN}Full lockdown complete.${NC}"
+echo "  - ALL network interfaces: DOWN"
+echo "  - Wireless/Bluetooth: BLOCKED"
+echo "  - NetworkManager: DISABLED"
+echo "  - Firewall: ACTIVE (deny all)"
+echo "  - Lockdown services: ENABLED (persists across reboots)"
+echo ""
+echo "  This machine is now fully offline."
